@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 #include <set>
-#include <ctime>
 
 using namespace std;
 
@@ -43,7 +42,6 @@ void Prim(int n, vector <Edge> graph, string file_name) {
 	int v_p;
 	Edge v_ed;
 	int sum_weight=0;
-	int start = clock();
 
 	while (edges_in != n-1) {
 		min_weight = 9999;
@@ -64,8 +62,7 @@ void Prim(int n, vector <Edge> graph, string file_name) {
 		sum_weight += min_weight;
 		edges_in += 1;
 	}
-	int end = clock();
-	int t = (end - start);
+
 	fout.open("Answers/"+file_name+".txt");
 	fout << "Minimal cost: " <<sum_weight << endl;
 	fout << "Time: " << t << endl;

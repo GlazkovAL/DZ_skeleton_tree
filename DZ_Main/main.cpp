@@ -3,8 +3,10 @@
 #include <string>
 #include <vector>
 #include <set>
+#include <chrono>
 
 using namespace std;
+using namespace chrono;
 
 //Структура ребра графа
 struct Edge {
@@ -43,6 +45,8 @@ void Prim(int n, vector <Edge> graph, string file_name) {
 	Edge v_ed;
 	int sum_weight=0;
 
+	auto start_Func = system_clock::now();
+
 	while (edges_in != n-1) {
 		min_weight = 9999;
 		for (int point : visited_p) {
@@ -63,9 +67,11 @@ void Prim(int n, vector <Edge> graph, string file_name) {
 		edges_in += 1;
 	}
 
+	auto read_time = system_clock::now() - start_Func;
+
 	fout.open("Answers/"+file_name+".txt");
 	fout << "Minimal cost: " <<sum_weight << endl;
-	fout << "Time: " << t << endl;
+	fout << "Time: " << duration_cast<microseconds>(read_time).count() << " Microseconds" << endl;
 	fout << "Path:" << endl;
 
 	if (fout.is_open()) {

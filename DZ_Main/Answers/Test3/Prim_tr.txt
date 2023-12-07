@@ -1,18 +1,17 @@
-Minimal cost: 99
-Time: 201 Microseconds
+Minimal cost: 270
+Time: 205 Microseconds
 Path:
-start 1 end 4 weight 5
-start 1 end 6 weight 11
-start 2 end 6 weight 4
-start 2 end 3 weight 6
-start 5 end 6 weight 9
-start 3 end 8 weight 12
-start 8 end 16 weight 6
-start 12 end 16 weight 2
-start 9 end 12 weight 4
-start 5 end 7 weight 14
-start 7 end 11 weight 3
-start 7 end 10 weight 6
-start 10 end 14 weight 9
-start 14 end 15 weight 7
-start 13 end 15 weight 1
+start 1 end 2 weight 14
+start 2 end 3 weight 17
+start 1 end 15 weight 22
+start 3 end 4 weight 31
+start 4 end 9 weight 11
+start 8 end 9 weight 11
+start 7 end 8 weight 15
+start 6 end 7 weight 8
+start 5 end 6 weight 12
+start 1 end 10 weight 35
+start 10 end 11 weight 38
+start 11 end 14 weight 27
+start 12 end 14 weight 23
+start 12 end 13 weight 6

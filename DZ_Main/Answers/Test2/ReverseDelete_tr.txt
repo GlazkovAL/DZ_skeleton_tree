@@ -1,9 +1,9 @@
-Maximal cost: 96
+Minimal cost: 26
 Time: 0
 Path:
-start 1 end 3 weight 20
-start 1 end 7 weight 15
-start 6 end 7 weight 25
-start 2 end 7 weight 14
-start 3 end 4 weight 12
-start 3 end 5 weight 10
+start 1 end 4 weight 6
+start 4 end 7 weight 2
+start 1 end 5 weight 8
+start 2 end 5 weight 4
+start 2 end 6 weight 1
+start 2 end 3 weight 5

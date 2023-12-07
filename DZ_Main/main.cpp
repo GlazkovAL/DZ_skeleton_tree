@@ -37,18 +37,18 @@ void ReverseDelete(int n, vector<Edge> graph, string file_name) {
     vector<Edge> path = {};
     int edges_in = n - 1;
     int active_p = 1;
-    int max_weight;
+    int min_weight; 
     int v_p;
     Edge v_ed;
     int sum_weight = 0;
     int start = clock();
 
     while (edges_in != 0) {
-        max_weight = -1;
+        min_weight = INT_MAX; 
         for (int point : visited_p) {
             for (Edge ed : graph) {
-                if (((ed.start_p == point && visited_p.count(ed.end_p) == 0) || (ed.end_p == point && visited_p.count(ed.start_p) == 0)) && ed.weight > max_weight) {
-                    max_weight = ed.weight;
+                if (((ed.start_p == point && visited_p.count(ed.end_p) == 0) || (ed.end_p == point && visited_p.count(ed.start_p) == 0)) && ed.weight < min_weight) { // изменено знак сравнения
+                    min_weight = ed.weight; 
                     if (ed.start_p == point) v_p = ed.end_p;
                     else v_p = ed.start_p;
                     v_ed = ed;
@@ -59,13 +59,13 @@ void ReverseDelete(int n, vector<Edge> graph, string file_name) {
         }
         visited_p.insert(v_p);
         path.push_back(v_ed);
-        sum_weight += max_weight;
+        sum_weight += min_weight; 
         edges_in -= 1;
     }
     int end = clock();
     int t = (end - start);
     fout.open("Answers/" + file_name + ".txt");
-    fout << "Maximal cost: " << sum_weight << endl;
+    fout << "Minimal cost: " << sum_weight << endl;
     fout << "Time: " << t << endl;
     fout << "Path:" << endl;
 

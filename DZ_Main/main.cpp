@@ -88,32 +88,22 @@ void Dense_Prim(int n, vector <Edge> graph, string file_name) {
 		}
 		auto t = minimal(storage);
 		min_weight = t.first;
-		v_p = t.second;
-		storage[v_p] = inf;
-		v_ed = storage_ed[v_p];
-		v_p = storage_end[v_p];
-		storage[v_p] = inf;
-		for (Edge ed : graph) {
-			if (ed.start_p == v_p && visited_p.count(ed.end_p) != 0) { storage[ed.end_p] = inf;
-			edited_p = { v_ed.start_p, v_ed.end_p, ed.end_p };
-			}
-			else if (ed.end_p == v_p && visited_p.count(ed.start_p) != 0) {
-				storage[ed.start_p] = inf;
-				edited_p = { v_ed.start_p, v_ed.end_p, ed.start_p};
-			}
-			else {
-				edited_p = { v_ed.start_p, v_ed.end_p};
-			}
-		}
-			
-		cout << "suka" << v_p << endl;
+		int v_end = t.second;
+		v_ed = storage_ed[v_end];
+		v_p = storage_end[v_end];
 
 		visited_p.insert(v_p);
+		edited_p = {};
+		edited_p.insert(v_p);
+		for (int p : visited_p) {
+			if(storage[p] != inf) {
+				storage[p] = inf;
+				edited_p.insert(p);
+			}
+		}
 		path.push_back(v_ed);
 		sum_weight += min_weight;
-		cout << "bimbimbambam" << min_weight << endl;
 		edges_in += 1;
-		cout << "blyad" << v_p << endl;
 	}
 	auto read_time = system_clock::now() - start_Func;
 	fout.open("Answers/"+file_name+".txt");

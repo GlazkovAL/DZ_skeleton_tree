@@ -3,126 +3,136 @@
 #include <string>
 #include <vector>
 #include <set>
+#include <algorithm>
 #include <ctime>
 
 using namespace std;
 
-//��������� ����� �����
+// Структура ребра графа
 struct Edge {
-
-	int start_p;
-	int end_p;
-	int weight;
+  int start_p;
+  int end_p;
+  int weight;
 };
 
-//���������� ��������� ������ ��� �����
-ostream& operator << (ostream &out_s, Edge ed) {
-	return out_s << "start " << ed.start_p << " end " << ed.end_p << " weight " << ed.weight << endl;
+// Перегрузка оператора << для вывода ребра
+ostream& operator << (ostream& out_s, const Edge& ed) {
+  return out_s << "start " << ed.start_p << " end " << ed.end_p << " weight " << ed.weight << endl;
 }
 
-istream& operator >> (istream &in, Edge &ed) {
-	int start_p;
-	int end_p;
-	int weight;
-
-	in >> start_p >> end_p >> weight;
-	ed = { start_p,end_p,weight };
-
-
-	return in;
+// Перегрузка оператора >> для ввода ребра
+istream& operator >> (istream& in, Edge& ed) {
+  return in >> ed.start_p >> ed.end_p >> ed.weight;
 }
 
-//�������� �����
-void Prim(int n, vector <Edge> graph, string file_name) {
-	ofstream fout;
-	set <int> visited_p = {1};
-	vector <Edge> path = {};
-	int edges_in=0;
-	int active_p=1;
-	int min_weight;
-	int v_p;
-	Edge v_ed;
-	int sum_weight=0;
-	int start = clock();
-
-	while (edges_in != n-1) {
-		min_weight = 9999;
-		for (int point : visited_p) {
-			for (Edge ed : graph) {
-				if (((ed.start_p == point && visited_p.count(ed.end_p)==0) || (ed.end_p == point && visited_p.count(ed.start_p) == 0)) && ed.weight < min_weight) {
-					min_weight = ed.weight;
-					if (ed.start_p == point) v_p = ed.end_p;
-					else v_p = ed.start_p;
-					v_ed = ed;
-				}
-				
-			}
-
-		}
-		visited_p.insert(v_p);
-		path.push_back(v_ed);
-		sum_weight += min_weight;
-		edges_in += 1;
-	}
-	int end = clock();
-	int t = (end - start);
-	fout.open("Answers/"+file_name+".txt");
-	fout << "Minimal cost: " <<sum_weight << endl;
-	fout << "Time: " << t << endl;
-	fout << "Path:" << endl;
-
-	if (fout.is_open()) {
-		for (int i = 0; i < n - 1; i++)
-		{
-			fout << path[i];
-		}
-	}
-	fout.close();
+// Функция для сравнения ребер по весу
+bool compareEdges(const Edge& e1, const Edge& e2) {
+  return e1.weight < e2.weight;
 }
 
-int main(){
-	int n=0;
-	ifstream fin; 
-	vector <Edge> graph;
-	Edge ed{ 0,0,0 };
-	// ������ ���� ������� ����
-	fin.open("Tests/1test.txt");
-	if (fin.is_open()) {
-		fin >> n ;
-		
-			while(fin >> ed){
-				graph.push_back(ed);
-			}
-	}
-	fin.close();
-	Prim(n, graph,"Test1/Prim_tr");
+// Функция нахождения корня дерева
+int findRoot(const vector<int>& parent, int i) {
+  if (parent[i] == i)
+    return i;
+  return findRoot(parent, parent[i]);
+}
 
-	
-	graph = {};
+// Функция объединения двух поддеревьев
+void unionTrees(vector<int>& parent, int i, int j) {
+  int root_i = findRoot(parent, i);
+  int root_j = findRoot(parent, j);
+  parent[root_i] = root_j;
+}
 
-	//������ ���� ������ ����
-	fin.open("Tests/2test.txt");
-	if (fin.is_open()) {
-		fin >> n;
+// Функция построения минимального остовного дерева алгоритмом Краскала
+void Kruskal(int n, vector<Edge>& graph, string file_name) {
+  ofstream fout;
+  vector<Edge> path;
+  vector<int> parent(n + 1), rank(n + 1, 0);
+  int sum_weight = 0;
+  int start = clock();
 
-		while (fin >> ed) {
-			graph.push_back(ed);
-		}
-	}
-	fin.close();
-	Prim(n, graph, "Test2/Prim_tr");
+  // Инициализация родителей вершин
+  for (int i = 1; i <= n; i++)
+    parent[i] = i;
 
-	graph = {};
+  // Сортировка ребер графа по весу
+  sort(graph.begin(), graph.end(), compareEdges);
 
-	//������ ���� ����������� ����
-	fin.open("Tests/3test.txt");
-	if (fin.is_open()) {
-		fin >> n;
+  // Проход по всем ребрам графа
+  for (const Edge& ed : graph) {
+    int root_start = findRoot(parent, ed.start_p);
+    int root_end = findRoot(parent, ed.end_p);
 
-		while (fin >> ed) {
-			graph.push_back(ed);
-		}
-	}
-	fin.close();
-	Prim(n, graph, "Test3/Prim_tr");
+    // Если ребра соединяют разные поддеревья, добавляем его в остовное дерево
+    if (root_start != root_end) {
+      path.push_back(ed);
+      sum_weight += ed.weight;
+      // Объединение поддеревьев
+      unionTrees(parent, root_start, root_end);
+    }
+  }
+
+  int end = clock();
+  int t = (end - start);
+  fout.open("Answers/" + file_name + ".txt");
+  fout << "Minimal cost: " << sum_weight << endl;
+  fout << "Time: " << t << endl;
+  fout << "Path:" << endl;
+
+  if (fout.is_open()) {
+    for (const Edge& ed : path) {
+      fout << ed;
+    }
+  }
+  fout.close();
+}
+
+int main() {
+  int n = 0;
+  ifstream fin;
+  vector<Edge> graph;
+  Edge ed{ 0,0,0 };
+
+  // Считывание и выполнение для первого графа
+  fin.open("Tests/1test.txt");
+  if (fin.is_open()) {
+    fin >> n;
+
+    while (fin >> ed) {
+      graph.push_back(ed);
+    }
+  }
+  fin.close();
+  Kruskal(n, graph, "Test1/Kruskal_tr");
+
+  // Очистка графа
+  graph.clear();
+
+  // Считывание и выполнение для второго графа
+  fin.open("Tests/2test.txt");
+  if (fin.is_open()) {
+    fin >> n;
+
+    while (fin >> ed) {
+      graph.push_back(ed);
+    }
+  }
+  fin.close();
+  Kruskal(n, graph, "Test2/Kruskal_tr");
+
+  // Очистка графа
+  graph.clear();
+
+  // Считывание и выполнение для третьего графа
+  fin.open("Tests/3test.txt");
+  if (fin.is_open()) {
+    fin >> n;
+
+    while (fin >> ed) {
+      graph.push_back(ed);
+    }
+  }
+  fin.close();
+  Kruskal(n, graph, "Test3/Kruskal_tr");
 }

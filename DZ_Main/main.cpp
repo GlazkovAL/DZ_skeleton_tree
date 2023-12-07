@@ -58,6 +58,83 @@ void Prim(int n, vector <Edge> graph, string file_name) {
                     v_ed = ed;
                 }
 
+pair<int, int> minimal(vector<int> min_weight) {
+	int min = min_weight[0];
+	int min_i = 0;
+	for (int i = 0; i < min_weight.size(); i++) {
+		if (min_weight[i] < min) {
+			min = min_weight[i];
+			min_i = i;
+		}
+	}
+	return pair<int, int> (min, min_i);
+}
+
+
+//�������� ����� (������� ����)
+void Dense_Prim(int n, vector <Edge> graph, string file_name) {
+	const int inf = 99999;
+	ofstream fout;
+	set <int> visited_p = {1};
+	set <int> edited_p = {1};
+	vector <int> storage(n+1,inf);
+	vector <int> storage_end(n+1,-1);
+	vector<Edge> storage_ed(n+1, { 0,0,0 });
+	vector <Edge> path = {};
+	int edges_in=0;
+	int active_p=1;
+	int min_weight{};
+	int v_p;
+	Edge v_ed;
+	int sum_weight=0;
+	
+	auto start_Func = system_clock::now();
+
+	while (edges_in != n-1) {
+		for (int point : edited_p) {
+			for (Edge ed : graph) {
+				if ((ed.end_p == point && visited_p.count(ed.start_p) == 0) || (ed.start_p == point && visited_p.count(ed.end_p) == 0)) {
+					if (storage[point] > ed.weight) {
+						storage[point] = ed.weight;
+						storage_ed[point] = ed;
+						cout << point << endl;
+						cout << ed << endl;
+						if (ed.end_p == point) {
+							storage_end[point] = ed.start_p;
+						}
+						else {
+							storage_end[point] = ed.end_p;
+						}
+					}
+				}
+			}
+
+		}
+		auto t = minimal(storage);
+		min_weight = t.first;
+		int v_end = t.second;
+		v_ed = storage_ed[v_end];
+		v_p = storage_end[v_end];
+
+		visited_p.insert(v_p);
+		edited_p = {};
+		edited_p.insert(v_p);
+		for (int p : visited_p) {
+			if(storage[p] != inf) {
+				storage[p] = inf;
+				edited_p.insert(p);
+			}
+		}
+		path.push_back(v_ed);
+		sum_weight += min_weight;
+		edges_in += 1;
+	}
+	auto read_time = system_clock::now() - start_Func;
+	fout.open("Answers/"+file_name+".txt");
+	fout << "Minimal cost: " <<sum_weight << endl;
+	fout << "Time: " << duration_cast<microseconds>(read_time).count() << " Microseconds" << endl;
+	fout << "Path:" << endl;
+
             }
 
         }
@@ -90,6 +167,23 @@ int findRoot(vector<int>& parent, int vertex) {
     return findRoot(parent, parent[vertex]);
 }
 
+int main(){
+	int n=0;
+	ifstream fin; 
+	vector <Edge> graph;
+	Edge ed{ 0,0,0 };
+	// ������ ���� ������� ����
+	fin.open("Tests/1test.txt");
+	if (fin.is_open()) {
+		fin >> n ;
+		
+			while(fin >> ed){
+				graph.push_back(ed);
+			}
+	}
+	fin.close();
+	Dense_Prim(n, graph,"Test1/Dense_Prim");
+
 // ������� ��� ����������� ���� ��������
 void unionSets(vector<int>& parent, vector<int>& rank, int root1, int root2) {
     if (rank[root1] < rank[root2]) {
@@ -113,6 +207,12 @@ void Kruskal(int n, vector<Edge> graph, string file_name) {
     int sum_weight = 0;
 
     auto start_Func = system_clock::now();
+		while (fin >> ed) {
+			graph.push_back(ed);
+		}
+	}
+	fin.close();
+	Dense_Prim(n, graph, "Test2/Dense_Prim");
 
     for (int i = 1; i <= n; i++) {
         parent[i] = i;
@@ -200,4 +300,10 @@ int main() {
     Kruskal(n, graph, "Test3/Kruskal_tr");
 
     return 0;
+		while (fin >> ed) {
+			graph.push_back(ed);
+		}
+	}
+	fin.close();
+	Dense_Prim(n, graph, "Test3/Dense_Prim");
 }

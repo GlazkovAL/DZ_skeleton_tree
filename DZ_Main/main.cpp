@@ -284,6 +284,68 @@ void Kruskal(int n, vector<Edge> graph, string file_name) {
     fout.close();
 }
 
+// Функция для сравнения ребер по весу
+bool compareEdges(const Edge& e1, const Edge& e2) {
+  return e1.weight < e2.weight;
+}
+
+// Функция нахождения корня дерева
+int findRoot(const vector<int>& parent, int i) {
+  if (parent[i] == i)
+    return i;
+  return findRoot(parent, parent[i]);
+}
+
+// Функция объединения двух поддеревьев
+void unionTrees(vector<int>& parent, int i, int j) {
+  int root_i = findRoot(parent, i);
+  int root_j = findRoot(parent, j);
+  parent[root_i] = root_j;
+}
+
+// Функция построения минимального остовного дерева алгоритмом Краскала
+void Kruskal_cl(int n, vector<Edge>& graph, string file_name) {
+  ofstream fout;
+  vector<Edge> path;
+  vector<int> parent(n + 1), rank(n + 1, 0);
+  int sum_weight = 0;
+  auto start_Func = system_clock::now();
+
+  // Инициализация родителей вершин
+  for (int i = 1; i <= n; i++)
+    parent[i] = i;
+
+  // Сортировка ребер графа по весу
+  sort(graph.begin(), graph.end(), compareEdges);
+
+  // Проход по всем ребрам графа
+  for (const Edge& ed : graph) {
+    int root_start = findRoot(parent, ed.start_p);
+    int root_end = findRoot(parent, ed.end_p);
+
+    // Если ребра соединяют разные поддеревья, добавляем его в остовное дерево
+    if (root_start != root_end) {
+      path.push_back(ed);
+      sum_weight += ed.weight;
+      // Объединение поддеревьев
+      unionTrees(parent, root_start, root_end);
+    }
+  }
+
+  auto read_time = system_clock::now() - start_Func;
+  fout.open("Answers/" + file_name + ".txt");
+  fout << "Minimal cost: " << sum_weight << endl;
+  fout << "Time: " << duration_cast<microseconds>(read_time).count() << " Microseconds" << endl;
+  fout << "Path:" << endl;
+
+  if (fout.is_open()) {
+    for (const Edge& ed : path) {
+      fout << ed;
+    }
+  }
+  fout.close();
+}
+
 int main() {
     int n = 0;
     ifstream fin;
@@ -302,6 +364,7 @@ int main() {
     fin.close();
     Prim(n, graph, "Test1/Prim_tr");
     Dense_Prim(n, graph, "Test1/Dense_Prim");
+    Kruskal_cl(n, graph, "Test1/Kruskal_cl");
     Kruskal(n, graph, "Test1/Kruskal_tr");
     ReverseDelete(n, graph, "Test1/Reverse_d");
 
@@ -317,6 +380,7 @@ int main() {
     fin.close();
     Prim(n, graph, "Test2/Prim_tr");
     Dense_Prim(n, graph, "Test2/Dense_Prim");
+    Kruskal_cl(n, graph, "Test2/Kruskal_cl");
     Kruskal(n, graph, "Test2/Kruskal_tr");
     ReverseDelete(n, graph, "Test2/Reverse_d");
 
@@ -334,8 +398,11 @@ int main() {
     fin.close();
     Prim(n, graph, "Test3/Prim_tr");
     Dense_Prim(n, graph, "Test3/Dense_Prim");
+    Kruskal_cl(n, graph, "Test3/Kruskal_cl");
     Kruskal(n, graph, "Test3/Kruskal_tr");
     ReverseDelete(n, graph, "Test3/Reverse_d");
 
     return 0;
 }
+
+

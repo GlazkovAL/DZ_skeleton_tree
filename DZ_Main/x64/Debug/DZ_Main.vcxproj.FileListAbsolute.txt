@@ -1,1 +1,2 @@
 C:\Users\HP20\Documents\GitHub\DZ_Algoritm\DZ_Main\x64\Debug\DZ_Main.exe
+C:\Users\Карина\Documents\GitHub\DZ_skeleton_tree\DZ_Main\x64\Debug\DZ_Main.exe

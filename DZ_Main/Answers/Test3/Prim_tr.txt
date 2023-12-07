@@ -1,5 +1,5 @@
 Minimal cost: 99
-Time: 0
+Time: 1
 Path:
 start 1 end 4 weight 5
 start 1 end 6 weight 11

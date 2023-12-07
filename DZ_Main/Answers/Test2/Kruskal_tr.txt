@@ -1,0 +1,9 @@
+Minimal cost: 26
+Time: 0
+Path:
+start 2 end 6 weight 1
+start 4 end 7 weight 2
+start 2 end 5 weight 4
+start 2 end 3 weight 5
+start 1 end 4 weight 6
+start 1 end 5 weight 8

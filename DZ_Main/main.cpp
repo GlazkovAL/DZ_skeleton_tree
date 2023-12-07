@@ -3,9 +3,10 @@
 #include <string>
 #include <vector>
 #include <set>
-#include <ctime>
+#include <chrono>
 
 using namespace std;
+using namespace chrono;
 
 //Структура ребра графа
 struct Edge {
@@ -32,43 +33,92 @@ istream& operator >> (istream &in, Edge &ed) {
 	return in;
 }
 
-//Алгоритм Прима
-void Prim(int n, vector <Edge> graph, string file_name) {
+
+pair<int, int> minimal(vector<int> min_weight) {
+	int min = min_weight[0];
+	int min_i = 0;
+	for (int i = 0; i < min_weight.size(); i++) {
+		if (min_weight[i] < min) {
+			min = min_weight[i];
+			min_i = i;
+		}
+	}
+	return pair<int, int> (min, min_i);
+}
+
+
+//Алгоритм Прима (Плотный граф)
+void Dense_Prim(int n, vector <Edge> graph, string file_name) {
+	const int inf = 99999;
 	ofstream fout;
 	set <int> visited_p = {1};
+	set <int> edited_p = {1};
+	vector <int> storage(n+1,inf);
+	vector <int> storage_end(n+1,-1);
+	vector<Edge> storage_ed(n+1, { 0,0,0 });
 	vector <Edge> path = {};
 	int edges_in=0;
 	int active_p=1;
-	int min_weight;
+	int min_weight{};
 	int v_p;
 	Edge v_ed;
 	int sum_weight=0;
-	int start = clock();
+	
+	auto start_Func = system_clock::now();
 
 	while (edges_in != n-1) {
-		min_weight = 9999;
-		for (int point : visited_p) {
+		for (int point : edited_p) {
 			for (Edge ed : graph) {
-				if (((ed.start_p == point && visited_p.count(ed.end_p)==0) || (ed.end_p == point && visited_p.count(ed.start_p) == 0)) && ed.weight < min_weight) {
-					min_weight = ed.weight;
-					if (ed.start_p == point) v_p = ed.end_p;
-					else v_p = ed.start_p;
-					v_ed = ed;
+				if ((ed.end_p == point && visited_p.count(ed.start_p) == 0) || (ed.start_p == point && visited_p.count(ed.end_p) == 0)) {
+					if (storage[point] > ed.weight) {
+						storage[point] = ed.weight;
+						storage_ed[point] = ed;
+						cout << point << endl;
+						cout << ed << endl;
+						if (ed.end_p == point) {
+							storage_end[point] = ed.start_p;
+						}
+						else {
+							storage_end[point] = ed.end_p;
+						}
+					}
 				}
-				
 			}
 
 		}
+		auto t = minimal(storage);
+		min_weight = t.first;
+		v_p = t.second;
+		storage[v_p] = inf;
+		v_ed = storage_ed[v_p];
+		v_p = storage_end[v_p];
+		storage[v_p] = inf;
+		for (Edge ed : graph) {
+			if (ed.start_p == v_p && visited_p.count(ed.end_p) != 0) { storage[ed.end_p] = inf;
+			edited_p = { v_ed.start_p, v_ed.end_p, ed.end_p };
+			}
+			else if (ed.end_p == v_p && visited_p.count(ed.start_p) != 0) {
+				storage[ed.start_p] = inf;
+				edited_p = { v_ed.start_p, v_ed.end_p, ed.start_p};
+			}
+			else {
+				edited_p = { v_ed.start_p, v_ed.end_p};
+			}
+		}
+			
+		cout << "suka" << v_p << endl;
+
 		visited_p.insert(v_p);
 		path.push_back(v_ed);
 		sum_weight += min_weight;
+		cout << "bimbimbambam" << min_weight << endl;
 		edges_in += 1;
+		cout << "blyad" << v_p << endl;
 	}
-	int end = clock();
-	int t = (end - start);
+	auto read_time = system_clock::now() - start_Func;
 	fout.open("Answers/"+file_name+".txt");
 	fout << "Minimal cost: " <<sum_weight << endl;
-	fout << "Time: " << t << endl;
+	fout << "Time: " << duration_cast<microseconds>(read_time).count() << " Microseconds" << endl;
 	fout << "Path:" << endl;
 
 	if (fout.is_open()) {
@@ -79,6 +129,7 @@ void Prim(int n, vector <Edge> graph, string file_name) {
 	}
 	fout.close();
 }
+
 
 int main(){
 	int n=0;
@@ -95,7 +146,7 @@ int main(){
 			}
 	}
 	fin.close();
-	Prim(n, graph,"Test1/Prim_tr");
+	Dense_Prim(n, graph,"Test1/Dense_Prim");
 
 	
 	graph = {};
@@ -110,7 +161,7 @@ int main(){
 		}
 	}
 	fin.close();
-	Prim(n, graph, "Test2/Prim_tr");
+	Dense_Prim(n, graph, "Test2/Dense_Prim");
 
 	graph = {};
 
@@ -124,5 +175,5 @@ int main(){
 		}
 	}
 	fin.close();
-	Prim(n, graph, "Test3/Prim_tr");
+	Dense_Prim(n, graph, "Test3/Dense_Prim");
 }

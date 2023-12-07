@@ -1,5 +1,5 @@
 Minimal cost: 200
-Time: 13 Microseconds
+Time: 9 Microseconds
 Path:
 start 3 end 4 weight 2
 start 6 end 11 weight 2
